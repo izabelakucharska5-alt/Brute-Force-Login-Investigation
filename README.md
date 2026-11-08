@@ -1,72 +1,98 @@
 # SOC-Brute-Force-Investigation
 
-**Brute Force Login Investigation**
+**Brute Force Detection & Authentication Incident Investigation**
 
-![Status](https://img.shields.io/badge/Status-In%20Progress-yellow) ![Project](https://img.shields.io/badge/Type-Blue%20Team-blue) ![SIEM](https://img.shields.io/badge/SIEM-Splunk-black)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen) ![Project](https://img.shields.io/badge/Type-Blue%20Team-blue) ![SIEM](https://img.shields.io/badge/SIEM-Splunk-black) ![Level](https://img.shields.io/badge/Level-Junior-blue)
 
-A junior-level, simulated **SOC L1 investigation** focused on identifying and assessing repeated failed authentication attempts and a potentially suspicious successful sign-in.
+A simulated **SOC L1 investigation** of suspicious authentication activity targeting an employee account in a fictional organization.
 
-## Project Scenario
+The project demonstrates how Splunk and SPL can be used to identify repeated failed login attempts, investigate suspicious source IP addresses, analyze authentication timelines and assess potential account compromise.
 
-A fictional employee account receives multiple failed sign-in attempts from the same external IP address. A successful sign-in is then recorded from that source. The investigation will use Splunk to review the authentication events, establish the sequence of activity, and assess whether the pattern is consistent with a brute-force attempt.
+## Investigation Summary
 
-The goal is to demonstrate a practical SOC L1 workflow: examine the available evidence, identify suspicious activity, document findings, and recommend appropriate escalation or containment actions. The project is intentionally scoped to junior analyst-level tasks.
+The investigation identified a series of suspicious authentication attempts targeting Alice Johnson's account.
 
-## Objectives
+Key findings:
 
-- Review authentication events in Splunk.
-- Distinguish successful and failed sign-ins.
-- Identify repeated failures associated with a user and source IP.
-- Review the timeline of authentication attempts.
-- Assess the risk of a successful sign-in following repeated failures.
-- Document findings and recommend appropriate SOC L1 response actions.
+- **14** authentication events analyzed.
+- **9** failed authentication attempts.
+- **5** successful authentication events.
+- **8 consecutive failed login attempts** against Alice's account.
+- **1 successful authentication** from the same suspicious source IP following the failed attempts.
+- **1 targeted account** associated with the suspicious IP address.
 
-## Dataset
+The suspicious activity originated from `203.0.113.25`, geolocated to Frankfurt, Germany, and involved an unknown device.
 
-The project uses a synthetic CSV dataset containing **14 sign-in events**.
+After eight consecutive failed attempts, a successful sign-in was recorded from the same IP address at 09:05:12.
 
-File: [`data/brute_force_auth_logs.csv`](data/brute_force_auth_logs.csv)
+The successful authentication occurred just 36 seconds after the final failed attempt.
 
-The dataset includes the following fields:
+## Focus Areas
 
-| Field | Description |
+- Authentication log analysis.
+- Identification of repeated failed login attempts.
+- Brute-force attack detection.
+- Source IP investigation.
+- User authentication timeline reconstruction.
+- Successful versus failed login analysis.
+- Identification of suspicious devices and geographic locations.
+- Potential account compromise assessment.
+- Incident triage and response recommendations.
+
+## Technologies & Frameworks
+
+- **Splunk Enterprise** — SIEM platform used to ingest and investigate synthetic authentication logs.
+- **SPL** — Splunk Search Processing Language used to filter, aggregate and analyze authentication events.
+- **CSV** — Structured dataset containing simulated login events.
+- **Blue Team / SOC L1** — Security monitoring and incident investigation workflow.
+
+## Repository Contents
+
+| File / Directory | Description |
 |---|---|
-| `timestamp` | Date and time of the authentication event, including timezone offset |
-| `event_type` | Event category |
-| `user` | Account associated with the event |
-| `src_ip` | Source IP address |
-| `src_location` | Approximate source location |
-| `device_id` | Device identifier, where available |
-| `result` | Authentication result (`success` or `failure`) |
-| `auth_method` | Authentication method |
-| `mfa` | MFA result or status |
-| `risk` | Risk level recorded for the event |
-| `details` | Additional event context |
+| [`investigation-brute-force.md`](investigation-brute-force.md) | Full investigation report, executed SPL searches, findings, analysis and screenshots |
+| [`data/`](data/) | Synthetic authentication log dataset |
+| [`Screenshots/`](Screenshots/) | Screenshots documenting the Splunk investigation process |
 
-## Tools & Technologies
+## Investigation Workflow
 
-- **Splunk** — SIEM platform used to search and investigate the CSV events.
-- **SPL** — Splunk Search Processing Language used for filtering, sorting, and summarizing authentication activity.
-- **CSV** — Structured source data for the simulated investigation.
+1. Reviewed the overall distribution of successful and failed authentication events.
+2. Identified accounts with repeated failed login attempts.
+3. Examined Alice Johnson's authentication history and reconstructed the event timeline.
+4. Investigated the suspicious source IP address to determine which accounts it targeted.
+5. Compared successful authentication events to identify unusual login activity.
+6. Assessed the potential account compromise and documented recommended incident response actions.
 
-## Repository Structure
+The full investigation includes the exact SPL searches, corresponding Splunk screenshots, observed results and analysis.
 
-```text
-SOC-Brute-Force-Investigation/
-├── README.md
-├── investigation.md
-├── data/
-│   └── brute_force_auth_logs.csv
-└── Screenshots/
-    └── .gitkeep
-```
+See [`investigation-brute-force.md`](investigation-brute-force.md).
 
-## Investigation Documentation
+## Key Findings
 
-The investigation is documented step by step in [`investigation.md`](investigation.md). Each search will be recorded when it is executed, together with its exact SPL command, the corresponding Splunk screenshot, the observed results, and the analyst's interpretation.
+The investigation identified a suspicious authentication pattern involving Alice Johnson's account:
 
-Screenshots will be stored in the [`Screenshots/`](Screenshots/) directory and linked directly below the relevant SPL search in the investigation report.
+- A normal successful sign-in was recorded from Warsaw, Poland, using her known device at 08:30.
+- Eight failed login attempts originated from `203.0.113.25` between 09:02:01 and 09:04:36.
+- The attempts originated from Frankfurt, Germany, and used an unknown device.
+- A successful authentication followed at 09:05:12 from the same suspicious IP address.
+- No other user accounts were associated with this source IP in the supplied dataset.
+
+The geographic difference between Warsaw and Frankfurt within approximately 32 minutes also represents a potential impossible-travel indicator in the simulated scenario.
+
+**Conclusion:** The observed activity is consistent with a targeted brute-force attempt against a single account, followed by a potentially successful account compromise.
+
+The available logs do not establish the identity of the actor or what actions were performed after authentication.
+
+## Recommended Incident Response
+
+The investigation recommends escalating the incident to SOC L2 / Incident Response, verifying the activity with the account owner, securing the potentially compromised account, reviewing MFA activity and monitoring for further suspicious authentication events.
 
 ## Disclaimer
 
-This is an educational project based entirely on fictional users and synthetic authentication events. The IP addresses used belong to documentation ranges reserved for examples and must not be treated as real-world indicators of malicious activity. No production accounts or systems are involved.
+This is an educational Blue Team project based on a fictional scenario and synthetic security logs.
+
+**All SPL searches were executed in Splunk Enterprise** against the supplied synthetic dataset.
+
+No production infrastructure, real employee accounts or real security incidents were involved.
+
+All names, locations and events are fictional. The IP addresses belong to documentation ranges reserved for examples and must not be treated as real-world malicious indicators.
