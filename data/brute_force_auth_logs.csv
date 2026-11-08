@@ -1,1 +1,15 @@
-
+timestamp,event_type,user,src_ip,src_location,device_id,result,auth_method,mfa,risk,details
+2026-11-08T08:30:00+01:00,signin,alice.johnson,198.51.100.10,Warsaw Poland,ALICE-LAPTOP-01,success,password,success,low,Normal successful sign-in from known device
+2026-11-08T08:35:00+01:00,signin,bob.smith,198.51.100.11,Warsaw Poland,BOB-LAPTOP-01,success,password,success,low,Normal successful sign-in from known device
+2026-11-08T08:47:00+01:00,signin,carol.white,198.51.100.12,Wroclaw Poland,CAROL-DESKTOP-01,success,password,success,low,Normal successful sign-in from known device
+2026-11-08T09:02:01+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:02:22+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:02:44+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:03:07+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:03:28+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:03:51+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:04:13+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:04:36+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,failure,password,not_completed,medium,Invalid password
+2026-11-08T09:05:12+01:00,signin,alice.johnson,203.0.113.25,Frankfurt Germany,unknown,success,password,success,high,Successful sign-in after repeated failed attempts from same source IP
+2026-11-08T09:06:30+01:00,signin,bob.smith,198.51.100.11,Warsaw Poland,BOB-LAPTOP-01,success,password,success,low,Normal successful sign-in from known device
+2026-11-08T09:11:04+01:00,signin,bob.smith,198.51.100.11,Warsaw Poland,BOB-LAPTOP-01,failure,password,not_completed,low,Single invalid password attempt
