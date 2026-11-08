@@ -124,3 +124,43 @@ The change from Warsaw to Frankfurt within 32 minutes also represents a potentia
 **Assessment:** The observed pattern is consistent with a brute-force attempt followed by a potentially successful account compromise. The successful authentication after repeated failures significantly increases the severity of the incident.
 
 **Note:** The dataset uses synthetic IP addresses and simulated geographic locations. The impossible-travel observation is therefore a scenario indicator, not real-world geolocation evidence.
+
+
+
+## 4. Suspicious Source IP Investigation
+
+**Objective:** Determine whether the suspicious source IP address targeted multiple accounts or focused exclusively on Alice Johnson's account.
+
+**Executed SPL:**
+
+```spl
+index=main source="brute_force_auth_logs.csv" src_ip="203.0.113.25"
+| stats count as total_attempts count(eval(result="failure")) as failed_attempts count(eval(result="success")) as successful_attempts values(src_location) as locations values(device_id) as devices by user src_ip
+| sort - total_attempts
+```
+
+![Suspicious IP Scope — Splunk search and results](Screenshots/04-suspicious-ip-scope.png)
+
+**Results:**
+
+The search returned 9 authentication events associated with the suspicious IP address.
+
+| User | Source IP | Total attempts | Failed attempts | Successful attempts |
+|---|---|---:|---:|---:|
+| alice.johnson | `203.0.113.25` | 9 | 8 | 1 |
+
+Additional observed attributes:
+- Location: Frankfurt, Germany.
+- Device: `unknown`.
+
+**Analysis:**
+
+All nine authentication attempts from `203.0.113.25` were associated with Alice Johnson's account.
+
+Eight attempts failed due to invalid passwords, followed by one successful authentication from the same IP address.
+
+No other user accounts were associated with this source IP in the supplied dataset.
+
+This suggests a targeted brute-force attempt against a single account rather than password spraying across multiple accounts.
+
+**Assessment:** High-priority suspicious authentication activity. The successful sign-in following repeated failed attempts raises strong suspicion of account compromise.
