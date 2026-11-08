@@ -164,3 +164,106 @@ No other user accounts were associated with this source IP in the supplied datas
 This suggests a targeted brute-force attempt against a single account rather than password spraying across multiple accounts.
 
 **Assessment:** High-priority suspicious authentication activity. The successful sign-in following repeated failed attempts raises strong suspicion of account compromise.
+
+
+
+## 5. Successful Authentication Review
+
+**Objective:** Review all successful authentication events and identify unusual logins that may indicate successful account compromise.
+
+**Executed SPL:**
+
+```spl
+index=main source="brute_force_auth_logs.csv" result="success"
+| table _time user src_ip src_location device_id details
+| sort 0 _time
+```
+
+![Successful Login Review — Splunk search and results](Screenshots/05-successful-login-review.png)
+
+**Results:**
+
+The search returned 5 successful authentication events.
+
+| User | Time | Source IP | Location | Device | Assessment |
+|---|---|---|---|---|---|
+| alice.johnson | 08:30:00 | `198.51.100.10` | Warsaw | ALICE-LAPTOP-01 | Normal |
+| bob.smith | 08:35:00 | `198.51.100.11` | Warsaw | BOB-LAPTOP-01 | Normal |
+| carol.white | 08:47:00 | `198.51.100.12` | Wroclaw | CAROL-DESKTOP-01 | Normal |
+| alice.johnson | 09:05:12 | `203.0.113.25` | Frankfurt | unknown | Suspicious |
+| bob.smith | 09:06:30 | `198.51.100.11` | Warsaw | BOB-LAPTOP-01 | Normal |
+
+**Analysis:**
+
+Four successful authentication events followed the expected pattern of known devices and previously observed locations.
+
+However, Alice Johnson's successful authentication at 09:05:12 originated from the same suspicious IP address (`203.0.113.25`) associated with eight consecutive failed login attempts.
+
+This successful authentication occurred 36 seconds after the final failed attempt.
+
+The combination of repeated authentication failures, an unfamiliar source IP, an unknown device, an unusual geographic location and a subsequent successful login strongly suggests a possible account compromise.
+
+**Assessment:** Suspicious successful authentication following a brute-force-like attack. The incident should be treated as a potential account compromise and escalated for further investigation.
+
+
+
+## 6. Investigation Conclusion
+
+The investigation identified suspicious authentication activity targeting Alice Johnson's account.
+
+Eight consecutive failed login attempts originated from `203.0.113.25`, geolocated in Frankfurt, Germany, using an unknown device. These attempts occurred between 09:02:01 and 09:04:36.
+
+At 09:05:12, a successful authentication was recorded from the same IP address and unknown device.
+
+The investigation also identified a successful sign-in from Alice's usual device and location at 08:30, approximately 32 minutes before the suspicious activity.
+
+The findings are consistent with a targeted brute-force attack against a single account, followed by a potentially successful account compromise.
+
+The available logs do not establish the identity of the actor or any actions performed after authentication.
+
+**Final assessment: High-priority suspected account compromise.**
+
+## 7. Recommended Incident Response Actions
+
+As a SOC L1 analyst, the recommended actions are:
+
+1. **Escalate the incident** to SOC L2 / Incident Response due to the successful authentication following repeated failures.
+2. **Verify the activity with Alice** using a trusted communication channel.
+3. **Protect the account** by following the organization's account-compromise procedure, including password reset and session revocation where appropriate.
+4. **Investigate MFA activity** and check whether any authentication methods were changed.
+5. **Review further activity** associated with the suspicious IP and account, including available endpoint and application logs.
+6. **Consider blocking the suspicious IP** in accordance with organizational security procedures.
+7. **Monitor the account** for additional suspicious authentication attempts.
+
+## 8. Investigation Limitations
+
+The investigation is based on a synthetic dataset containing 14 authentication events.
+
+The available logs do not include:
+- Detailed MFA authentication history.
+- Session and token information.
+- Endpoint telemetry.
+- Application access records after successful authentication.
+- Evidence of data access or exfiltration.
+
+Therefore, the investigation cannot establish what actions were performed after the suspicious successful login.
+
+The IP addresses and geographic locations are simulated and must not be treated as real-world threat intelligence.
+
+## 9. Final Project Summary
+
+This project demonstrates a basic SOC L1 authentication investigation workflow using Splunk and SPL.
+
+The investigation included:
+
+- Reviewing authentication event distribution.
+- Identifying repeated failed login attempts.
+- Analyzing a targeted user's authentication timeline.
+- Investigating a suspicious source IP.
+- Comparing successful authentication events.
+- Assessing potential account compromise.
+- Documenting incident response recommendations.
+
+The findings support a suspected brute-force attack against one employee account, followed by a successful suspicious authentication.
+
+The investigation demonstrates the use of basic SPL searches, event aggregation, authentication analysis and evidence-based incident assessment.
